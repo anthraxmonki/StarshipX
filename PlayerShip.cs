@@ -19,6 +19,20 @@ namespace StarshipX
     class PlayerShip : Sprite
     {
 
+        //TO-DO
+        //increase and decrease speed via C and Z keys respectively
+        //    and Left and Right Bumpers
+        //Add Gamepad Control Support
+        //Maybe add Flame Scale Adjustment based on speed adjust ment
+        //    larger flames for a higher speed,
+        //    smaller scaled flame animation for a slow speed
+
+
+
+        //Fire BulletBills
+        //Fire Fireballs
+
+
 
         Vector2 v2ShipPosition;
 
@@ -29,6 +43,15 @@ namespace StarshipX
         const float fSpeed3 = 450f;
         const float fSpeed4 = 600f;
         const float fSpeed5 = 750f;
+
+        List<float> lofSpeed = new List<float>();
+        int iSpeedIndex;
+
+
+        KeyboardState ksCurrentState = Keyboard.GetState();
+        KeyboardState ksPreviousState = new KeyboardState();
+
+
 
         const float fSpeedBase = 140f;
         float fSpeedModifier;
@@ -51,7 +74,16 @@ namespace StarshipX
         {
 
             base.LoadContent(thecontentManager, sfileName, fgetsetScale);
-            fSpeedModifier = fSpeed5;
+
+            lofSpeed.Add(fSpeed0);
+            lofSpeed.Add(fSpeed1);
+            lofSpeed.Add(fSpeed2);
+            lofSpeed.Add(fSpeed3);
+            lofSpeed.Add(fSpeed4);
+            lofSpeed.Add(fSpeed5);
+
+            iSpeedIndex = 2;
+            fSpeedModifier = lofSpeed[iSpeedIndex];
 
         }
 
@@ -70,11 +102,29 @@ namespace StarshipX
 
 
 
-        public void Update(GameTime thegameTime, KeyboardState kscurrentState, GamePadState gpcurrentState)
-        {
 
-            SetDirectionState(kscurrentState, gpcurrentState);
+        //public void Update(GameTime thegameTime, KeyboardState kscurrentState, KeyboardState kspreviousState, GamePadState gpcurrentState)
+        public void Update(GameTime thegameTime, GamePadState gpcurrentState)
+        {
+            ksCurrentState = Keyboard.GetState();
+            if (ksCurrentState.IsKeyUp(Keys.Z))
+            {
+                ksPreviousState = ksCurrentState;
+            }
+
+
+
+
+            GetSpeedInput(ksCurrentState, ksPreviousState);
+
+
+
+
+            SetDirectionState(ksCurrentState, gpcurrentState);
             MoveDirection(thegameTime);
+
+
+
 
 
 
@@ -92,6 +142,50 @@ namespace StarshipX
 
 
             base.Update(thegameTime);
+        }
+
+
+
+        public void GetSpeedInput(KeyboardState kscurrentState, KeyboardState kspreviousState)
+        {
+            if(kspreviousState.IsKeyUp(Keys.Z)
+                && kscurrentState.IsKeyDown(Keys.Z))
+            {
+                ksPreviousState = ksCurrentState;
+                if (iSpeedIndex > 0)
+                {
+                    iSpeedIndex += -1;
+                }
+            }
+
+            else if (kspreviousState.IsKeyUp(Keys.C)
+                && kscurrentState.IsKeyDown(Keys.C))
+            {
+                ksPreviousState = ksCurrentState;
+
+                if (iSpeedIndex < 5)
+                {
+                    iSpeedIndex += 1;
+                }
+            }
+
+
+
+
+
+        }
+
+
+
+
+
+
+
+        public void SetSpeed()
+        {
+            
+
+
         }
 
 
@@ -168,8 +262,9 @@ namespace StarshipX
             if (currentDirectionState == DirectionState.UpLeft)
             {
                 v2ShipPosition += new Vector2(
-                    -1 * (fSpeedBase + fSpeedModifier) * (float)(thegameTime.ElapsedGameTime.TotalSeconds),
-                    -1 * (fSpeedBase + fSpeedModifier) * (float)(thegameTime.ElapsedGameTime.TotalSeconds));
+                    -1 * (fSpeedBase + lofSpeed[iSpeedIndex]) * (float)(thegameTime.ElapsedGameTime.TotalSeconds),
+                    -1 * (fSpeedBase + lofSpeed[iSpeedIndex]) * (float)(thegameTime.ElapsedGameTime.TotalSeconds)
+                    );
 
                 currentDirectionState = DirectionState.NoDirection;
             }
@@ -177,9 +272,9 @@ namespace StarshipX
             //UPRIGHT UPRIGHT UPRIGHT UPRIGHT
             else if (currentDirectionState == DirectionState.UpRight)
             {
-                v2ShipPosition += new Vector2( 
-                    (fSpeedBase + fSpeedModifier)      * (float)(thegameTime.ElapsedGameTime.TotalSeconds), 
-                    -1 * (fSpeedBase + fSpeedModifier) * (float)(thegameTime.ElapsedGameTime.TotalSeconds));
+                v2ShipPosition += new Vector2(
+                         (fSpeedBase + lofSpeed[iSpeedIndex]) * (float)(thegameTime.ElapsedGameTime.TotalSeconds),
+                    -1 * (fSpeedBase + lofSpeed[iSpeedIndex]) * (float)(thegameTime.ElapsedGameTime.TotalSeconds));
 
                 currentDirectionState = DirectionState.NoDirection;
             }
@@ -188,8 +283,8 @@ namespace StarshipX
             else if (currentDirectionState == DirectionState.DownRight)
             {
                 v2ShipPosition += new Vector2(
-                    (fSpeedBase + fSpeedModifier) * (float)(thegameTime.ElapsedGameTime.TotalSeconds),
-                    (fSpeedBase + fSpeedModifier) * (float)(thegameTime.ElapsedGameTime.TotalSeconds)
+                    (fSpeedBase + lofSpeed[iSpeedIndex]) * (float)(thegameTime.ElapsedGameTime.TotalSeconds),
+                    (fSpeedBase + lofSpeed[iSpeedIndex]) * (float)(thegameTime.ElapsedGameTime.TotalSeconds)
                     );
                 currentDirectionState = DirectionState.NoDirection;
             }
@@ -198,8 +293,8 @@ namespace StarshipX
             else if (currentDirectionState == DirectionState.DownLeft)
             {
                 v2ShipPosition += new Vector2(
-                    -1 * (fSpeedBase + fSpeedModifier) * (float)(thegameTime.ElapsedGameTime.TotalSeconds),
-                    (fSpeedBase + fSpeedModifier) * (float)(thegameTime.ElapsedGameTime.TotalSeconds)
+                    -1 * (fSpeedBase + lofSpeed[iSpeedIndex]) * (float)(thegameTime.ElapsedGameTime.TotalSeconds),
+                         (fSpeedBase + lofSpeed[iSpeedIndex]) * (float)(thegameTime.ElapsedGameTime.TotalSeconds)
                     );
                 currentDirectionState = DirectionState.NoDirection;
             }
@@ -212,27 +307,27 @@ namespace StarshipX
             {
                 v2ShipPosition += new Vector2(
                     0,
-                    -1 * (fSpeedBase + fSpeedModifier) * (float)(thegameTime.ElapsedGameTime.TotalSeconds));
+                    -1 * (fSpeedBase + lofSpeed[iSpeedIndex]) * (float)(thegameTime.ElapsedGameTime.TotalSeconds));
 
                 currentDirectionState = DirectionState.NoDirection;
             }
             //RIGHT RIGHT RIGHT RIGHT
             else if (currentDirectionState == DirectionState.Right)
             {
-                v2ShipPosition += new Vector2((fSpeedBase + fSpeedModifier) * (float)(thegameTime.ElapsedGameTime.TotalSeconds), 0);
+                v2ShipPosition += new Vector2((fSpeedBase + lofSpeed[iSpeedIndex]) * (float)(thegameTime.ElapsedGameTime.TotalSeconds), 0);
                 currentDirectionState = DirectionState.NoDirection;
             
             }
             //DOWN DOWN DOWN DOWN
             else if (currentDirectionState == DirectionState.Down)
             {
-                v2ShipPosition += new Vector2(0, (fSpeedBase + fSpeedModifier) * (float)(thegameTime.ElapsedGameTime.TotalSeconds));
+                v2ShipPosition += new Vector2(0, (fSpeedBase + lofSpeed[iSpeedIndex]) * (float)(thegameTime.ElapsedGameTime.TotalSeconds));
                 currentDirectionState = DirectionState.NoDirection;
             }
             //LEFT LEFT LEFT LEFT
             else if (currentDirectionState == DirectionState.Left)
             {
-                v2ShipPosition += new Vector2(-1 * (fSpeedBase + fSpeedModifier) * (float)(thegameTime.ElapsedGameTime.TotalSeconds), 0);
+                v2ShipPosition += new Vector2(-1 * (fSpeedBase + lofSpeed[iSpeedIndex]) * (float)(thegameTime.ElapsedGameTime.TotalSeconds), 0);
                 currentDirectionState = DirectionState.NoDirection;
             }
 

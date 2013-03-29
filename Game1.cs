@@ -135,29 +135,38 @@ namespace StarshipX
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            GamePadState gpCurrentState = GamePad.GetState(PlayerIndex.One);
-            KeyboardState ksCurrentState = Keyboard.GetState();
+            GamePadState gpCurrentState   = GamePad.GetState(PlayerIndex.One);
+            //KeyboardState ksCurrentState  = Keyboard.GetState();
+            //KeyboardState ksPreviousState = new KeyboardState();
 
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
 
-            if (ksCurrentState.IsKeyDown(Keys.D1) == true)
-            {
-                currentGameState = GameState.DebugOn;
-                IsMouseVisible = true;
-            }
-            if (ksCurrentState.IsKeyDown(Keys.D2) == true)
-            {
-                currentGameState = GameState.DebugOff;
-                IsMouseVisible = false;
-            }
-
-            oPlayerShip.Update(gameTime, ksCurrentState, gpCurrentState);
 
 
+            //if (ksCurrentState.IsKeyDown(Keys.D1) == true)
+            //{
+            //    currentGameState = GameState.DebugOn;
+            //    IsMouseVisible = true;
+            //    ksPreviousState = ksCurrentState;
+            //}
+            //if (ksCurrentState.IsKeyDown(Keys.D2) == true)
+            //{
+            //    currentGameState = GameState.DebugOff;
+            //    IsMouseVisible = false;
+            //    ksPreviousState = ksCurrentState;
+            //}
 
+
+
+
+
+            //oPlayerShip.Update(gameTime, ksCurrentState, ksPreviousState, gpCurrentState);
+
+
+            oPlayerShip.Update(gameTime, gpCurrentState);
 
 
 
